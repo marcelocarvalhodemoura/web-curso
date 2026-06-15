@@ -1,0 +1,89 @@
+.dashboard {
+  padding-bottom: 60px;
+}
+
+.dashboard-overview {
+  margin-bottom: 40px;
+}
+
+.overview-stats {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.overview-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.overview-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.overview-bar {
+  height: 8px;
+}
+
+.dashboard-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.phase-progress-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.phase-progress-card {
+  display: block;
+  color: inherit;
+}
+
+.phase-progress-card:hover {
+  color: inherit;
+}
+
+.phase-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.phase-progress-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.phase-progress-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.phase-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .overview-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

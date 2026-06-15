@@ -1,0 +1,69 @@
+.phases-page {
+  padding-bottom: 60px;
+}
+
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.phase-card {
+  display: block;
+  color: inherit;
+}
+
+.phase-card:hover {
+  color: inherit;
+}
+
+.phase-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.phase-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.phase-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.phase-objective {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.phase-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.phase-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.phase-progress .progress-bar {
+  flex: 1;
+}
+
+.phase-progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 36px;
+}
