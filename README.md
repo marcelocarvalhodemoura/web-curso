@@ -107,6 +107,26 @@ web-curso/
 docker compose up --build
 ```
 
+## Deploy Automático (GitHub -> Render)
+
+Este projeto está preparado para deploy contínuo usando o `render.yaml`.
+
+### Fluxo
+
+1. Você faz `git push origin main`
+2. O GitHub Actions executa o workflow de deploy
+3. O workflow dispara o deploy hook do Render
+4. O Render faz build da imagem Docker e publica
+
+### Configuração única
+
+1. No Render, abra seu serviço e copie o **Deploy Hook URL**
+2. No GitHub, acesse `Settings -> Secrets and variables -> Actions`
+3. Crie o secret `RENDER_DEPLOY_HOOK_URL` com a URL copiada
+4. Confirme que o workflow `.github/workflows/deploy-render.yml` está na branch `main`
+
+Depois disso, cada push para `main` publica automaticamente a nova versão.
+
 ## Licença
 
 MIT

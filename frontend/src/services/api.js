@@ -48,4 +48,15 @@ export const api = {
   getAdminStudents: () => request('/admin/students'),
 
   getAdminStudentProgress: (id) => request(`/admin/students/${id}/progress`),
+
+  getAdminUsers: () => request('/admin/users'),
+
+  createAdminUser: (data) =>
+    request('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+
+  updateAdminUser: (id, data) =>
+    request(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  deleteAdminUser: (id) =>
+    request(`/admin/users/${id}`, { method: 'DELETE' }),
 };
