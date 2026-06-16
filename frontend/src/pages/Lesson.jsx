@@ -16,6 +16,7 @@ export default function Lesson() {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     api.getLesson(phaseSlug, lessonSlug)
       .then(setLesson)
       .catch(console.error)
@@ -84,7 +85,7 @@ export default function Lesson() {
           <span>{lesson.title}</span>
         </div>
 
-        <VideoPlayer videos={lesson.videos} />
+        <VideoPlayer videos={lesson.videos} locked={lesson.videosLocked} />
 
         <article className="lesson-content card">
           <div className="lesson-header">

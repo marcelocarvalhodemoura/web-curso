@@ -16,8 +16,8 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const loggedUser = await login(email, password);
+      navigate(loggedUser.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

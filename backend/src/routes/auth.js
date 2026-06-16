@@ -26,7 +26,12 @@ router.post('/register', (req, res) => {
     .prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)')
     .run(name.trim(), email.toLowerCase().trim(), hashed);
 
-  const user = { id: result.lastInsertRowid, name: name.trim(), email: email.toLowerCase().trim() };
+  const user = {
+    id: result.lastInsertRowid,
+    name: name.trim(),
+    email: email.toLowerCase().trim(),
+    role: 'student',
+  };
   const token = generateToken(user);
 
   res.status(201).json({ user, token });
@@ -45,13 +50,16 @@ router.post('/login', (req, res) => {
   }
 
   const { password: _, ...safeUser } = user;
+  safeUser.role = safeUser.role || 'student';
   const token = generateToken(safeUser);
 
   res.json({ user: safeUser, token });
 });
 
 router.get('/me', authMiddleware, (req, res) => {
-  const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(req.user.id);
+  const user = db
+    .prepare('SELECT id, name, email, role, created_at FROM users WHERE id = ?')
+    .get(req.user.id);
   if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
   res.json(user);
 });

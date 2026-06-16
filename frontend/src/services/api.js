@@ -44,4 +44,8 @@ export const api = {
     request(`/phases/${phaseSlug}/lessons/${lessonSlug}/complete`, { method: 'DELETE' }),
 
   getProgress: () => request('/progress'),
+
+  getAdminStudents: () => request('/admin/students'),
+
+  getAdminStudentProgress: (id) => request(`/admin/students/${id}/progress`),
 };

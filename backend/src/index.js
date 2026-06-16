@@ -5,8 +5,10 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { initDatabase } from './db/database.js';
 import { seedDatabase } from './seed.js';
+import { seedAdminUser } from './seedAdmin.js';
 import { seedVideos } from './videosSeed.js';
 import authRoutes from './routes/auth.js';
+import adminRoutes from './routes/admin.js';
 import phasesRoutes from './routes/phases.js';
 import lessonsRoutes from './routes/lessons.js';
 import progressRoutes from './routes/progress.js';
@@ -18,6 +20,7 @@ const PORT = process.env.PORT || 3001;
 
 initDatabase();
 seedDatabase();
+seedAdminUser();
 seedVideos();
 
 app.use(cors());
@@ -28,6 +31,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/phases', phasesRoutes);
 app.use('/api/phases/:phaseSlug/lessons', lessonsRoutes);
 app.use('/api/progress', progressRoutes);

@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import './Layout.css';
 
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -24,7 +24,11 @@ export default function Layout() {
             <Link to="/fases">Trilha</Link>
             {user ? (
               <>
-                <Link to="/dashboard">Meu Progresso</Link>
+                {isAdmin ? (
+                  <Link to="/admin">Painel Admin</Link>
+                ) : (
+                  <Link to="/dashboard">Meu Progresso</Link>
+                )}
                 <span className="nav-user">{user.name}</span>
                 <button className="btn btn-ghost" onClick={handleLogout}>
                   Sair

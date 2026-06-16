@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import db from '../db/database.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, tryGetAuthUser, isStudentUser } from '../middleware/auth.js';
 
 const router = Router({ mergeParams: true });
 
@@ -24,11 +24,20 @@ router.get('/:slug', (req, res) => {
     .prepare('SELECT youtube_id, title, channel, sort_order FROM lesson_videos WHERE lesson_id = ? ORDER BY sort_order')
     .all(lesson.id);
 
+  const user = tryGetAuthUser(req);
+  const canWatchVideos = isStudentUser(user);
+
   const currentIndex = siblings.findIndex((s) => s.slug === lesson.slug);
   const prev = currentIndex > 0 ? siblings[currentIndex - 1] : null;
   const next = currentIndex < siblings.length - 1 ? siblings[currentIndex + 1] : null;
 
-  res.json({ ...lesson, videos, prev, next });
+  res.json({
+    ...lesson,
+    videos: canWatchVideos ? videos : [],
+    videosLocked: !canWatchVideos && videos.length > 0,
+    prev,
+    next,
+  });
 });
 
 router.post('/:slug/complete', authMiddleware, (req, res) => {

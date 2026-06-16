@@ -4,6 +4,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminRoute from './components/AdminRoute';
 import Phases from './pages/Phases';
 import PhaseDetail from './pages/PhaseDetail';
 import Lesson from './pages/Lesson';
@@ -16,6 +18,14 @@ export default function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route
+          path="admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
         <Route path="fases" element={<Phases />} />
         <Route path="fases/:slug" element={<PhaseDetail />} />
         <Route path="fases/:phaseSlug/aulas/:lessonSlug" element={<Lesson />} />

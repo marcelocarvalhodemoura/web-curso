@@ -1,0 +1,148 @@
+.admin-dashboard {
+  padding-bottom: 60px;
+}
+
+.admin-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.admin-summary-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.admin-summary-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.admin-summary-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.admin-empty {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.admin-table {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.admin-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table tbody tr:not(.admin-detail-row) {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.admin-table tbody tr:not(.admin-detail-row):hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.admin-table tbody tr.expanded {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.admin-student-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.admin-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.admin-progress-bar {
+  flex: 1;
+  height: 6px;
+}
+
+.admin-progress-cell span {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 36px;
+}
+
+.admin-expand-icon {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 10px;
+  width: 32px;
+}
+
+.admin-detail-row td {
+  padding: 0 16px 16px;
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.admin-phase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.admin-phase-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.admin-phase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.admin-phase-item h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .admin-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table th:nth-child(3),
+  .admin-table td:nth-child(3) {
+    display: none;
+  }
+}

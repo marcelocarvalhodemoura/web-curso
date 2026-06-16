@@ -19,6 +19,7 @@ export function initDatabase() {
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'student',
       created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -96,6 +97,11 @@ export function initDatabase() {
       UNIQUE(user_id, phase_id)
     );
   `);
+
+  const userColumns = db.prepare('PRAGMA table_info(users)').all();
+  if (!userColumns.some((col) => col.name === 'role')) {
+    db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'student'");
+  }
 }
 
 export default db;

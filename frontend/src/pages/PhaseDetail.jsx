@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import './PhaseDetail.css';
 
 export default function PhaseDetail() {
   const { slug } = useParams();
+  const { isStudent } = useAuth();
   const [phase, setPhase] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -82,7 +84,11 @@ export default function PhaseDetail() {
                         {lesson.type === 'project' && (
                           <span className="badge badge-accent">Projeto</span>
                         )}
-                        <span className="badge badge-video">▶ Vídeo</span>
+                        {isStudent ? (
+                          <span className="badge badge-video">▶ Vídeo</span>
+                        ) : (
+                          <span className="badge badge-locked">🔒 Vídeo</span>
+                        )}
                       </div>
                     </div>
                     {completed && <span className="lesson-check">✓</span>}

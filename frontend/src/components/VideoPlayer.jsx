@@ -1,10 +1,27 @@
+import { Link } from 'react-router-dom';
 import './VideoPlayer.css';
 
 function getEmbedUrl(youtubeId) {
   return `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1`;
 }
 
-export default function VideoPlayer({ videos }) {
+export default function VideoPlayer({ videos, locked }) {
+  if (locked) {
+    return (
+      <section className="lesson-videos card video-locked">
+        <div className="video-locked-content">
+          <span className="video-locked-icon">🔒</span>
+          <h2>Vídeos exclusivos para alunos</h2>
+          <p>Entre com sua conta de aluno para assistir aos vídeos desta aula.</p>
+          <div className="video-locked-actions">
+            <Link to="/login" className="btn btn-primary">Entrar</Link>
+            <Link to="/register" className="btn btn-secondary">Criar conta</Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (!videos?.length) return null;
 
   const [main, ...extras] = videos;

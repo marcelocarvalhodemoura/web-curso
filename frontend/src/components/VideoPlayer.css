@@ -139,6 +139,40 @@
   color: var(--text-muted);
 }
 
+.video-locked {
+  text-align: center;
+  padding: 48px 28px;
+}
+
+.video-locked-content {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.video-locked-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.video-locked h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.video-locked p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.video-locked-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .lesson-videos {
     padding: 20px;
