@@ -49,6 +49,10 @@ router.post('/login', (req, res) => {
     return res.status(401).json({ error: 'Email ou senha incorretos' });
   }
 
+  if (!user.active) {
+    return res.status(403).json({ error: 'Conta desativada. Entre em contato com o administrador.' });
+  }
+
   const { password: _, ...safeUser } = user;
   safeUser.role = safeUser.role || 'student';
   const token = generateToken(safeUser);
@@ -58,10 +62,10 @@ router.post('/login', (req, res) => {
 
 router.get('/me', authMiddleware, (req, res) => {
   const user = db
-    .prepare('SELECT id, name, email, role, created_at FROM users WHERE id = ?')
+    .prepare('SELECT id, name, email, role, active, created_at FROM users WHERE id = ?')
     .get(req.user.id);
   if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
-  res.json(user);
+  res.json({ ...user, active: !!user.active });
 });
 
 export default router;

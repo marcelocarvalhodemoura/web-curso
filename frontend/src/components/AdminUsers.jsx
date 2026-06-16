@@ -25,6 +25,7 @@ export default function AdminUsers() {
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [togglingId, setTogglingId] = useState(null);
 
   const loadUsers = () => {
     setLoading(true);
@@ -82,6 +83,22 @@ export default function AdminUsers() {
     }
   };
 
+  const handleToggleActive = async (user) => {
+    setError('');
+    setTogglingId(user.id);
+    try {
+      await api.updateAdminUser(user.id, { active: !user.active });
+      loadUsers();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const activeCount = users.filter((u) => u.active).length;
+  const inactiveCount = users.length - activeCount;
+
   const handleDelete = async (userId) => {
     try {
       await api.deleteAdminUser(userId);
@@ -113,7 +130,10 @@ export default function AdminUsers() {
       <div className="admin-users-header">
         <div>
           <h2>Gerenciamento de Usuários</h2>
-          <p>{users.length} usuário{users.length !== 1 ? 's' : ''} cadastrado{users.length !== 1 ? 's' : ''}</p>
+          <p>
+            {activeCount} ativo{activeCount !== 1 ? 's' : ''}
+            {inactiveCount > 0 && ` · ${inactiveCount} inativo${inactiveCount !== 1 ? 's' : ''}`}
+          </p>
         </div>
         <button type="button" className="btn btn-primary" onClick={openCreateModal}>
           Novo Usuário
@@ -132,13 +152,14 @@ export default function AdminUsers() {
                 <th>Nome</th>
                 <th>Email</th>
                 <th>Tipo</th>
+                <th>Status</th>
                 <th>Cadastro</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id}>
+                <tr key={user.id} className={!user.active ? 'admin-users-inactive' : ''}>
                   <td className="admin-student-name">
                     {user.name}
                     {user.id === currentUser?.id && (
@@ -151,6 +172,11 @@ export default function AdminUsers() {
                       {roleLabel(user.role)}
                     </span>
                   </td>
+                  <td>
+                    <span className={`badge ${user.active ? 'badge-success' : 'badge-muted'}`}>
+                      {user.active ? 'Ativo' : 'Inativo'}
+                    </span>
+                  </td>
                   <td>{formatDate(user.created_at)}</td>
                   <td>
                     <div className="admin-users-actions">
@@ -161,6 +187,20 @@ export default function AdminUsers() {
                       >
                         Editar
                       </button>
+                      {user.id !== currentUser?.id && (
+                        <button
+                          type="button"
+                          className={`btn btn-sm ${user.active ? 'admin-users-deactivate' : 'admin-users-activate'}`}
+                          onClick={() => handleToggleActive(user)}
+                          disabled={togglingId === user.id}
+                        >
+                          {togglingId === user.id
+                            ? '...'
+                            : user.active
+                              ? 'Desativar'
+                              : 'Ativar'}
+                        </button>
+                      )}
                       {user.id !== currentUser?.id && (
                         <button
                           type="button"

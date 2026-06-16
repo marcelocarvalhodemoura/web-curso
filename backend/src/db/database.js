@@ -102,6 +102,9 @@ export function initDatabase() {
   if (!userColumns.some((col) => col.name === 'role')) {
     db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'student'");
   }
+  if (!userColumns.some((col) => col.name === 'active')) {
+    db.exec('ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1');
+  }
 }
 
 export default db;

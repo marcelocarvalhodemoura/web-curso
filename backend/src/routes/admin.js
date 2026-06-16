@@ -15,6 +15,7 @@ function formatUser(row) {
     name: row.name,
     email: row.email,
     role: row.role || 'student',
+    active: row.active !== 0,
     created_at: row.created_at,
   };
 }
@@ -23,10 +24,16 @@ function countAdmins() {
   return db.prepare(`SELECT COUNT(*) as count FROM users WHERE role = 'admin'`).get().count;
 }
 
+function countActiveAdmins() {
+  return db
+    .prepare(`SELECT COUNT(*) as count FROM users WHERE role = 'admin' AND active = 1`)
+    .get().count;
+}
+
 router.get('/students', (_req, res) => {
   const students = db
     .prepare(
-      `SELECT id, name, email, created_at FROM users WHERE role = 'student' ORDER BY created_at DESC`
+      `SELECT id, name, email, created_at FROM users WHERE role = 'student' AND active = 1 ORDER BY created_at DESC`
     )
     .all();
 
@@ -65,7 +72,7 @@ router.get('/students/:id/progress', (req, res) => {
 
 router.get('/users', (_req, res) => {
   const users = db
-    .prepare(`SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC`)
+    .prepare(`SELECT id, name, email, role, active, created_at FROM users ORDER BY created_at DESC`)
     .all()
     .map(formatUser);
 
@@ -99,7 +106,7 @@ router.post('/users', (req, res) => {
     .run(name.trim(), normalizedEmail, hashed, role);
 
   const user = db
-    .prepare('SELECT id, name, email, role, created_at FROM users WHERE id = ?')
+    .prepare('SELECT id, name, email, role, active, created_at FROM users WHERE id = ?')
     .get(result.lastInsertRowid);
 
   res.status(201).json({ user: formatUser(user) });
@@ -107,7 +114,7 @@ router.post('/users', (req, res) => {
 
 router.put('/users/:id', (req, res) => {
   const targetId = Number(req.params.id);
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, active } = req.body;
 
   const existing = db.prepare('SELECT * FROM users WHERE id = ?').get(targetId);
   if (!existing) {
@@ -146,6 +153,17 @@ router.put('/users/:id', (req, res) => {
     updates.role = role;
   }
 
+  if (active !== undefined) {
+    const willBeActive = !!active;
+    if (!willBeActive && targetId === req.user.id) {
+      return res.status(400).json({ error: 'Você não pode desativar sua própria conta' });
+    }
+    if (!willBeActive && existing.role === 'admin' && countActiveAdmins() <= 1) {
+      return res.status(400).json({ error: 'Não é possível desativar o último administrador ativo' });
+    }
+    updates.active = willBeActive ? 1 : 0;
+  }
+
   if (password !== undefined && password !== '') {
     if (password.length < 6) {
       return res.status(400).json({ error: 'A senha deve ter pelo menos 6 caracteres' });
@@ -161,7 +179,7 @@ router.put('/users/:id', (req, res) => {
   db.prepare(`UPDATE users SET ${fields} WHERE id = ?`).run(...Object.values(updates), targetId);
 
   const user = db
-    .prepare('SELECT id, name, email, role, created_at FROM users WHERE id = ?')
+    .prepare('SELECT id, name, email, role, active, created_at FROM users WHERE id = ?')
     .get(targetId);
 
   res.json({ user: formatUser(user) });

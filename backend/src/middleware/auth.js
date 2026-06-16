@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import db from '../db/database.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'web-curso-dev-secret-change-in-production';
 
@@ -27,7 +28,25 @@ export function authMiddleware(req, res, next) {
 
   try {
     const token = header.slice(7);
-    req.user = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET);
+    const dbUser = db
+      .prepare('SELECT id, name, email, role, active FROM users WHERE id = ?')
+      .get(payload.id);
+
+    if (!dbUser) {
+      return res.status(401).json({ error: 'Usuário não encontrado' });
+    }
+
+    if (!dbUser.active) {
+      return res.status(403).json({ error: 'Conta desativada' });
+    }
+
+    req.user = {
+      id: dbUser.id,
+      email: dbUser.email,
+      name: dbUser.name,
+      role: dbUser.role || 'student',
+    };
     next();
   } catch {
     return res.status(401).json({ error: 'Token inválido ou expirado' });
