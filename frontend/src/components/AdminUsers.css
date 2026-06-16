@@ -46,31 +46,6 @@
   text-decoration-color: var(--text-muted);
 }
 
-.badge-muted {
-  background: rgba(148, 163, 184, 0.15);
-  color: var(--text-muted);
-}
-
-.admin-users-deactivate {
-  background: transparent;
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
-
-.admin-users-deactivate:hover {
-  background: rgba(245, 158, 11, 0.1);
-}
-
-.admin-users-activate {
-  background: transparent;
-  color: var(--success);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-}
-
-.admin-users-activate:hover {
-  background: rgba(34, 197, 94, 0.1);
-}
-
 .admin-users-delete {
   background: transparent;
   color: var(--danger);

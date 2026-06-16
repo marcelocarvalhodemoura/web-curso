@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { UserStatusBadge, UserStatusToggle } from './user-status';
 import './AdminUsers.css';
 
 const EMPTY_FORM = { name: '', email: '', password: '', role: 'student' };
@@ -25,7 +26,6 @@ export default function AdminUsers() {
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [togglingId, setTogglingId] = useState(null);
 
   const loadUsers = () => {
     setLoading(true);
@@ -80,19 +80,6 @@ export default function AdminUsers() {
       setFormError(err.message);
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleToggleActive = async (user) => {
-    setError('');
-    setTogglingId(user.id);
-    try {
-      await api.updateAdminUser(user.id, { active: !user.active });
-      loadUsers();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setTogglingId(null);
     }
   };
 
@@ -173,9 +160,7 @@ export default function AdminUsers() {
                     </span>
                   </td>
                   <td>
-                    <span className={`badge ${user.active ? 'badge-success' : 'badge-muted'}`}>
-                      {user.active ? 'Ativo' : 'Inativo'}
-                    </span>
+                    <UserStatusBadge active={user.active} />
                   </td>
                   <td>{formatDate(user.created_at)}</td>
                   <td>
@@ -187,20 +172,12 @@ export default function AdminUsers() {
                       >
                         Editar
                       </button>
-                      {user.id !== currentUser?.id && (
-                        <button
-                          type="button"
-                          className={`btn btn-sm ${user.active ? 'admin-users-deactivate' : 'admin-users-activate'}`}
-                          onClick={() => handleToggleActive(user)}
-                          disabled={togglingId === user.id}
-                        >
-                          {togglingId === user.id
-                            ? '...'
-                            : user.active
-                              ? 'Desativar'
-                              : 'Ativar'}
-                        </button>
-                      )}
+                      <UserStatusToggle
+                        user={user}
+                        disabled={user.id === currentUser?.id}
+                        onSuccess={loadUsers}
+                        onError={setError}
+                      />
                       {user.id !== currentUser?.id && (
                         <button
                           type="button"

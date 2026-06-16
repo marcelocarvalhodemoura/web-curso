@@ -1,0 +1,60 @@
+.user-status-badge.badge-muted {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-muted);
+}
+
+.user-status-deactivate {
+  background: transparent;
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.user-status-deactivate:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.user-status-activate {
+  background: transparent;
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.user-status-activate:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.user-status-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.user-status-modal {
+  width: 100%;
+  max-width: 440px;
+  padding: 28px;
+}
+
+.user-status-modal h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.user-status-modal p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.user-status-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
