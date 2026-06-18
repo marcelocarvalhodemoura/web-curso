@@ -16,7 +16,7 @@ Plataforma completa de ensino com **React** (frontend) e **Node.js** (backend), 
 | Camada    | Stack                                      |
 |-----------|--------------------------------------------|
 | Frontend  | React 18, Vite, React Router, React Markdown |
-| Backend   | Node.js, Express, SQLite (better-sqlite3)  |
+| Backend   | Node.js, Express, SQLite (Turso / local)   |
 | Auth      | JWT + bcryptjs                             |
 
 ## Início Rápido
@@ -109,16 +109,43 @@ docker compose up --build
 
 ## Deploy Automático (GitHub -> Render)
 
-Este projeto está preparado para deploy contínuo usando o `render.yaml`.
+Este projeto está preparado para deploy contínuo usando o `render.yaml` no plano **Free** do Render.
 
-### Fluxo
+### Persistência de dados (gratuito)
+
+No Render Free, o filesystem do container é efêmero — dados locais somem a cada restart. A solução é usar o **[Turso](https://turso.tech)** (SQLite na nuvem, plano gratuito permanente):
+
+| Ambiente   | Banco de dados                          |
+|------------|-----------------------------------------|
+| Local      | Arquivo `data/curso.db` (automático)    |
+| Produção   | Turso Cloud via variáveis de ambiente   |
+
+#### Configurar Turso (uma vez)
+
+1. Crie conta em [turso.tech](https://turso.tech) (sem cartão de crédito)
+2. Instale a CLI: `brew install tursodatabase/tap/turso` (ou veja [docs](https://docs.turso.tech/cli))
+3. Crie o banco:
+   ```bash
+   turso auth login
+   turso db create devtrail
+   turso db show devtrail --url      # copie a URL
+   turso db tokens create devtrail   # copie o token
+   ```
+4. No Render, em **Environment** do serviço, adicione:
+   - `TURSO_DATABASE_URL` = URL copiada (ex: `libsql://devtrail-xxx.turso.io`)
+   - `TURSO_AUTH_TOKEN` = token gerado
+5. Faça redeploy — o seed popula as fases automaticamente na primeira execução
+
+Usuários cadastrados e progresso passam a persistir entre restarts e deploys.
+
+### Fluxo de deploy
 
 1. Você faz `git push origin main`
 2. O GitHub Actions executa o workflow de deploy
 3. O workflow dispara o deploy hook do Render
 4. O Render faz build da imagem Docker e publica
 
-### Configuração única
+### Configuração única do deploy hook
 
 1. No Render, abra seu serviço e copie o **Deploy Hook URL**
 2. No GitHub, acesse `Settings -> Secrets and variables -> Actions`

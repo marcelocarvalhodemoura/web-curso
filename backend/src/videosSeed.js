@@ -1,4 +1,4 @@
-import db from './db/database.js';
+import { get, run, transaction, exec } from './db/database.js';
 
 /**
  * Vídeos curados em português, alinhados ao tema de cada aula.
@@ -200,38 +200,36 @@ const videosByLesson = {
   ],
 };
 
-export function seedVideos() {
-  const count = db.prepare('SELECT COUNT(*) as count FROM lesson_videos').get().count;
-  if (count > 0) return;
+export async function seedVideos() {
+  const countRow = await get('SELECT COUNT(*) as count FROM lesson_videos');
+  if (Number(countRow.count) > 0) return;
 
-  const getLesson = db.prepare(
-    `SELECT l.id FROM lessons l
-     JOIN phases p ON p.id = l.phase_id
-     WHERE p.slug = ? AND l.slug = ?`
-  );
-
-  const insert = db.prepare(
-    `INSERT INTO lesson_videos (lesson_id, youtube_id, title, channel, sort_order)
-     VALUES (?, ?, ?, ?, ?)`
-  );
-
-  const seed = db.transaction(() => {
+  await transaction(async (tx) => {
     for (const [key, videos] of Object.entries(videosByLesson)) {
       const [phaseSlug, lessonSlug] = key.split('/');
-      const lesson = getLesson.get(phaseSlug, lessonSlug);
+      const lesson = await tx.get(
+        `SELECT l.id FROM lessons l
+         JOIN phases p ON p.id = l.phase_id
+         WHERE p.slug = ? AND l.slug = ?`,
+        [phaseSlug, lessonSlug]
+      );
       if (!lesson) continue;
 
-      videos.forEach((video, index) => {
-        insert.run(lesson.id, video.youtubeId, video.title, video.channel, index + 1);
-      });
+      for (let index = 0; index < videos.length; index++) {
+        const video = videos[index];
+        await tx.run(
+          `INSERT INTO lesson_videos (lesson_id, youtube_id, title, channel, sort_order)
+           VALUES (?, ?, ?, ?, ?)`,
+          [lesson.id, video.youtubeId, video.title, video.channel, index + 1]
+        );
+      }
     }
   });
 
-  seed();
   console.log('✅ Vídeos recomendados adicionados às aulas');
 }
 
-export function reseedVideos() {
-  db.exec('DELETE FROM lesson_videos');
-  seedVideos();
+export async function reseedVideos() {
+  await exec('DELETE FROM lesson_videos');
+  await seedVideos();
 }

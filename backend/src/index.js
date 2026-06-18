@@ -18,11 +18,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-initDatabase();
-seedDatabase();
-seedAdminUser();
-seedVideos();
-
 app.use(cors());
 app.use(express.json());
 
@@ -48,6 +43,23 @@ if (fs.existsSync(publicDir)) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`🚀 Backend rodando em http://localhost:${PORT}`);
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Erro interno do servidor' });
+});
+
+async function bootstrap() {
+  await initDatabase();
+  await seedDatabase();
+  await seedAdminUser();
+  await seedVideos();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Backend rodando em http://localhost:${PORT}`);
+  });
+}
+
+bootstrap().catch((err) => {
+  console.error('Falha ao iniciar o servidor:', err);
+  process.exit(1);
 });

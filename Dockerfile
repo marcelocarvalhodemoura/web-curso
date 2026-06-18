@@ -1,5 +1,4 @@
 FROM node:20-alpine AS backend
-RUN apk add --no-cache python3 make g++
 WORKDIR /app
 COPY backend/package*.json ./
 RUN npm ci --production
@@ -13,7 +12,6 @@ COPY frontend/ ./
 RUN npm run build
 
 FROM node:20-alpine
-RUN apk add --no-cache python3 make g++
 WORKDIR /app
 COPY --from=backend /app ./
 COPY --from=frontend-build /app/dist ./public

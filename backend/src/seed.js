@@ -1,4 +1,4 @@
-import db from './db/database.js';
+import { get, run, transaction, exec } from './db/database.js';
 
 const phasesData = [
   {
@@ -1415,76 +1415,57 @@ Construa um sistema completo integrando tudo que aprendeu:
   },
 ];
 
-export function seedDatabase() {
-  const count = db.prepare('SELECT COUNT(*) as count FROM phases').get().count;
-  if (count > 0) return;
+export async function seedDatabase() {
+  const countRow = await get('SELECT COUNT(*) as count FROM phases');
+  if (Number(countRow.count) > 0) return;
 
-  const insertPhase = db.prepare(`
-    INSERT INTO phases (number, title, slug, objective, duration_weeks, expected_result, project, sort_order)
-    VALUES (@number, @title, @slug, @objective, @duration_weeks, @expected_result, @project, @sort_order)
-  `);
-
-  const insertLesson = db.prepare(`
-    INSERT INTO lessons (phase_id, title, slug, content, type, sort_order)
-    VALUES (@phase_id, @title, @slug, @content, @type, @sort_order)
-  `);
-
-  const insertExercise = db.prepare(`
-    INSERT INTO exercises (phase_id, title, description, sort_order)
-    VALUES (@phase_id, @title, @description, @sort_order)
-  `);
-
-  const insertTool = db.prepare(`
-    INSERT INTO tools (phase_id, name, url, sort_order)
-    VALUES (@phase_id, @name, @url, @sort_order)
-  `);
-
-  const seed = db.transaction(() => {
+  await transaction(async (tx) => {
     for (const phase of phasesData) {
-      const result = insertPhase.run({
-        number: phase.number,
-        title: phase.title,
-        slug: phase.slug,
-        objective: phase.objective,
-        duration_weeks: phase.duration_weeks,
-        expected_result: phase.expected_result,
-        project: phase.project,
-        sort_order: phase.number,
-      });
+      const result = await tx.run(
+        `INSERT INTO phases (number, title, slug, objective, duration_weeks, expected_result, project, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          phase.number,
+          phase.title,
+          phase.slug,
+          phase.objective,
+          phase.duration_weeks,
+          phase.expected_result,
+          phase.project,
+          phase.number,
+        ]
+      );
 
       const phaseId = result.lastInsertRowid;
 
-      phase.lessons.forEach((lesson, i) => {
-        insertLesson.run({
-          phase_id: phaseId,
-          title: lesson.title,
-          slug: lesson.slug,
-          content: lesson.content,
-          type: lesson.type,
-          sort_order: i + 1,
-        });
-      });
+      for (let i = 0; i < phase.lessons.length; i++) {
+        const lesson = phase.lessons[i];
+        await tx.run(
+          `INSERT INTO lessons (phase_id, title, slug, content, type, sort_order)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [phaseId, lesson.title, lesson.slug, lesson.content, lesson.type, i + 1]
+        );
+      }
 
-      phase.exercises.forEach((ex, i) => {
-        insertExercise.run({
-          phase_id: phaseId,
-          title: ex.title,
-          description: ex.description,
-          sort_order: i + 1,
-        });
-      });
+      for (let i = 0; i < phase.exercises.length; i++) {
+        const ex = phase.exercises[i];
+        await tx.run(
+          `INSERT INTO exercises (phase_id, title, description, sort_order)
+           VALUES (?, ?, ?, ?)`,
+          [phaseId, ex.title, ex.description, i + 1]
+        );
+      }
 
-      phase.tools.forEach((tool, i) => {
-        insertTool.run({
-          phase_id: phaseId,
-          name: tool.name,
-          url: tool.url || null,
-          sort_order: i + 1,
-        });
-      });
+      for (let i = 0; i < phase.tools.length; i++) {
+        const tool = phase.tools[i];
+        await tx.run(
+          `INSERT INTO tools (phase_id, name, url, sort_order)
+           VALUES (?, ?, ?, ?)`,
+          [phaseId, tool.name, tool.url || null, i + 1]
+        );
+      }
     }
   });
 
-  seed();
   console.log('✅ Banco de dados populado com 10 fases do curso');
 }

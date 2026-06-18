@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import db from '../db/database.js';
+import { get } from '../db/database.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'web-curso-dev-secret-change-in-production';
 
@@ -20,7 +20,7 @@ export function adminMiddleware(req, res, next) {
   });
 }
 
-export function authMiddleware(req, res, next) {
+export async function authMiddleware(req, res, next) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Token não fornecido' });
@@ -29,9 +29,9 @@ export function authMiddleware(req, res, next) {
   try {
     const token = header.slice(7);
     const payload = jwt.verify(token, JWT_SECRET);
-    const dbUser = db
-      .prepare('SELECT id, name, email, role, active FROM users WHERE id = ?')
-      .get(payload.id);
+    const dbUser = await get('SELECT id, name, email, role, active FROM users WHERE id = ?', [
+      payload.id,
+    ]);
 
     if (!dbUser) {
       return res.status(401).json({ error: 'Usuário não encontrado' });
