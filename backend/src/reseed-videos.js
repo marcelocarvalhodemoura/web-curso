@@ -1,8 +1,8 @@
-import { initDatabase } from './db/database.js';
+import { setupDatabase } from './db/setup.js';
 import { reseedVideos } from './videosSeed.js';
 import { get, all } from './db/database.js';
 
-await initDatabase();
+await setupDatabase();
 await reseedVideos();
 
 const countRow = await get('SELECT COUNT(*) as c FROM lesson_videos');

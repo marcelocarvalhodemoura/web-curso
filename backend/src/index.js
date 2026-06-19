@@ -3,10 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import { initDatabase } from './db/database.js';
-import { seedDatabase } from './seed.js';
-import { seedAdminUser } from './seedAdmin.js';
-import { seedVideos } from './videosSeed.js';
+import { setupDatabase } from './db/setup.js';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import phasesRoutes from './routes/phases.js';
@@ -49,10 +46,7 @@ app.use((err, _req, res, _next) => {
 });
 
 async function bootstrap() {
-  await initDatabase();
-  await seedDatabase();
-  await seedAdminUser();
-  await seedVideos();
+  await setupDatabase();
 
   app.listen(PORT, () => {
     console.log(`🚀 Backend rodando em http://localhost:${PORT}`);
